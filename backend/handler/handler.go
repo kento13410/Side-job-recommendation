@@ -9,10 +9,10 @@ import (
 
 type testRequest struct {
 	MonthlyIncome int `json:"monthly_income"`
-	WorkingHour int `json:"working_hour"`
+	MonthlyWorkHours int `json:"monthly_work_hours"`
 	Skill string `json:"skill"`
-	RiskDegree int `json:"risk_degree"`
-	IsInvestment bool `json:"is_investment"`
+	SkillLevel int `json:"skill_level"`
+	LeaningHours int `json:"leaning_hours"`
 }
 
 type blob []byte
