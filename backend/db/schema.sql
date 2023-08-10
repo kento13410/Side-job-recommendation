@@ -1,12 +1,10 @@
 CREATE TABLE IF NOT EXISTS `side_job` (
     `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
     `name`	TEXT NOT NULL,
-    `description`	TEXT NOT NULL,
-    `image`	TEXT NOT NULL,
     `monthly_income`	INTEGER NOT NULL,
     `work_hours`	INTEGER NOT NULL,
     `skill_id`	INTEGER NOT NULL,
-    `difficulty`	TEXT NOT NULL,
+    `difficulty`	INTEGER NOT NULL,
     `category_id`	INTEGER NOT NULL
 );
 
