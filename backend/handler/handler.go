@@ -12,15 +12,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type skill struct {
-	Name string `json:"name"`
-	Level int `json:"level"`
-}
-
 type testRequest struct {
 	MonthlyIncome int `json:"monthly_income"`
 	MonthlyWorkHours int `json:"monthly_work_hours"`
-	Skill []skill `json:"skill"`
+	Name []string `json:"name"`
+	Level []int `json:"level"`
 	LeaningHours int `json:"leaning_hours"`
 }
 
@@ -60,7 +56,7 @@ func Root(c echo.Context) error {
 }
 
 func Test(c echo.Context) error {
-	return c.File("../frontend/templates/test.html")
+	return c.Render(http.StatusOK, "../frontend/templates/test.html", nil)
 }
 
 func Calculate(c echo.Context) error {
@@ -71,10 +67,11 @@ func Calculate(c echo.Context) error {
 	if err := c.Validate(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
+	fmt.Println(req)
 
 	var skills string
-	for _, s := range req.Skill {
-		skills += s.Name + "（習熟度：" + fmt.Sprint(s.Level) + "）, "
+	for i := range req.Name {
+		skills += req.Name[i] + "（習熟度：" + fmt.Sprint(req.Level[i]) + "）, "
 	}
 	message := "以下の条件を満たすおすすめの副業を教えてください。月に欲しい金額：" + fmt.Sprint(req.MonthlyIncome) + "円, 月に働ける時間：" + fmt.Sprint(req.MonthlyWorkHours) + "時間, 現在のスキル：" + skills + "学習に使うことのできる時間：" + fmt.Sprint(req.LeaningHours) + "時間"
 
