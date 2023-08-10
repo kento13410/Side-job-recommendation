@@ -24,14 +24,19 @@ type applyRequest struct {
 }
 
 func Init(e *echo.Echo) {
+	e.GET("/", Root)
 	e.GET("/test", Test)
-	e.GET("/calculate", Calculate)
+	e.POST("/calculate", Calculate)
 	e.GET("/share", Share)
-	e.GET("/apply", Apply)
+	e.POST("/apply", Apply)
+}
+
+func Root(c echo.Context) error {
+	return c.File("../frontend/templates/index.html")
 }
 
 func Test(c echo.Context) error {
-	return nil
+	return c.File("../frontend/templates/test.html")
 }
 
 func Calculate(c echo.Context) error {
@@ -42,7 +47,7 @@ func Calculate(c echo.Context) error {
 	if err := c.Validate(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-	return c.JSON(http.StatusOK, req)
+	return c.File("../frontend/templates/result.html")
 }
 
 func Share(c echo.Context) error {
