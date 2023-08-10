@@ -7,73 +7,23 @@
 </head>
 <body>
     <h1>おすすめの副業診断テスト</h1>
-    <form action="/calculate" method="post">
-        <div class="question">
-            <p>Q1. あなたは現在、何か副業をしていますか？</p>
-            <input type="radio" id="yes" name="q1" value="yes">
-            <label for="yes">はい</label>
-            <input type="radio" id="no" name="q1" value="no">
-            <label for="no">いいえ</label>
-        </div>
-        <div class="question">
-            <p>Q2. 副業で月にどれくらい稼ぎたいですか？</p>
-            <input type="radio" id="less10k" name="q2" value="less10k">
-            <label for="less10k">1万円以下</label>
-            <input type="radio" id="10k-30k" name="q2" value="10k-30k">
-            <label for="10k-30k">1万円〜3万円</label>
-            <input type="radio" id="30k-50k" name="q2" value="30k-50k">
-            <label for="30k-50k">3万円〜5万円</label>
-            <input type="radio" id="50k-100k" name="q2" value="50k-100k">
-            <label for="50k-100k">5万円〜10万円</label>
-            <input type="radio" id="more100k" name="q2" value="more100k">
-            <label for="more100k">10万円以上</label>
-        </div>
-        <div class="question">
-            <p>Q3. 副業に使える時間はどれくらいですか？</p>
-            <input type="radio" id="less1h" name="q3" value="less1h">
-            <label for="less1h">1時間以下</label>
-            <input type="radio" id="1h-3h" name="q3" value="1h-3h">
-            <label for= "1h-3h">1時間〜3時間</label>
-            <input type= "radio"id= "3h-5h" name= "q3" value= "3h-5h">
-            <label for= "3h-5h">3時間〜5時間</label>
-            <input type= "radio"id= "5h-10h" name= "q3" value= "5h-10h">
-            <label for= "5h-10h">5時間〜10時間</label>
-            <input type= "radio"id= "more10h" name= "q3" value= "more10h">
-            <label for= "more10h">10時間以上</label>
-        </div>
-        <div class="question">
-            <p>Q4. 副業でやりたいことは何ですか？（複数選択可）</p>
-            <input type="checkbox" id="programming" name="q4" value="programming">
-            <label for="programming">プログラミング</label>
-            <input type="checkbox" id="design" name="q4" value="design">
-            <label for="design">デザイン</label>
-            <input type="checkbox" id="writing" name="q4" value="writing">
-            <label for="writing">ライティング</label>
-            <input type="checkbox" id="translation" name="q4" value="translation">
-            <label for="translation">翻訳</label>
-            <input type="checkbox" id="teaching" name="q4" value="teaching">
-            <label for="teaching">教育</label>
-            <input type="checkbox" id="sales" name="q4" value="sales">
-            <label for="sales">営業</label>
-            <input type="checkbox" id="others" name="q4" value="others">
-            <label for="others">その他</label>
-        </div>
-        <div class="question">
-            <p>Q5. 副業で重視することは何ですか？（一つだけ選択してください）</p>
-            <select name="q5">
-                <option value="">選択してください</option>
-                <option value="income">収入</option>
-                <option value="skill">スキルアップ</option>
-                <option value="interest">興味・趣味</option>
-                <option value="challenge">挑戦・冒険</option>
-                <option value="balance">ワークライフバランス</option>
-                <option value="network">人脈・コミュニティ</option>
-                <option value ="society">社会貢献</option>
-            </select>
-        </div>
-        <div class ="submit">
-            <input type ="submit" value ="診断する">
-        </div>
+    <form action="/calculate" method="POST">
+        <p>希望月給はいくらですか？<input type="number" name="monthly_income" required>円</p>
+        <p>月に働ける時間は何時間ですか？<input type="number" name="monthly_work_hours" required>時間</p>
+        <p>現在保有しているスキルとその習熟度を選択してください。</p>
+        <ul>
+            <li><input type="hidden" name="name" value="スキル名1">
+                <input type="radio" name="level" value="0" required>0
+                <input type="radio" name="level" value="1">1
+                <input type="radio" name="level" value="2">2
+                <input type="radio" name="level" value="3">3
+                <input type="radio" name="level" value="4">4
+                <input type="radio" name="level" value="5">5
+            </li>
+            <!-- 他のスキルも同様に追加 -->
+        </ul>
+        <p>学習可能時間は何時間ですか？<input type="number" name="learning_hours" required>時間</p>
+        <p><input type="submit" value="送信"></p>
     </form>
 </body>
 </html>

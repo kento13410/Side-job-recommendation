@@ -3,9 +3,9 @@ package db
 import (
 	"context"
 	"database/sql"
-	"encoding/csv"
-	"io"
-	"log"
+	_"encoding/csv"
+	_"io"
+	_"log"
 	"os"
 	"path/filepath"
 
@@ -35,54 +35,6 @@ func PrepareDB(ctx context.Context) (*sql.DB, error) {
 
 	if _, err = db.ExecContext(ctx, string(f)); err != nil {
 		return nil, errors.Wrap(err, "failed to exec query: %w")
-	}
-
-	tx, err := db.Begin();if err != nil {
-		return nil, errors.Wrap(err, "failed to begin transaction: %w")
-    }
-	defer tx.Rollback()
-
-	// プリペアドステートメントを作成する
-    stmt, err := tx.Prepare("INSERT INTO side_job VALUES (?, ?, ?)"); if err != nil {
-        log.Fatal(err)
-    }
-    defer stmt.Close()
-
-    // CSVファイルを開く
-    file, err := os.Open("./side_job.csv"); if err != nil {
-        log.Fatal(err)
-    }
-    defer file.Close()
-
-    // CSVファイルを読み込む
-    reader := csv.NewReader(file)
-
-    // ヘッダー行を読み飛ばす
-    _, err = reader.Read(); if err != nil {
-        log.Fatal(err)
-    }
-
-	// データ行を読み込んでデータベースに挿入する
-	for {
-        record, err := reader.Read()
-        if err == io.EOF {
-            break
-        }
-        if err != nil {
-            log.Fatal(err)
-        }
-
-		// CSVの各列をinterface{}型のスライスに変換する
-		args := make([]interface{}, len(record))
-		for i, v := range record {
-			args[i] = v
-		}
-
-		// プリペアドステートメントに値をバインドして実行する
-		_, err = stmt.Exec(args...)
-		if err != nil {
-			log.Fatal(err)
-		}
 	}
 
 	return db, nil

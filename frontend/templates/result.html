@@ -4,21 +4,18 @@
     <meta charset ="UTF-8">
     <link rel="stylesheet" href="../css/result.css">
     <title>おすすめの副業診断テストの結果</title>
-    </head>
+</head>
 <body>
     <h1>おすすめの副業診断テストの結果</h1>
-    <!-- ここにGoの関数で計算したおすすめの副業のデータを表示する -->
-    <!-- 例えば、以下のような内容 -->
-    <!--
-    <p>あなたにおすすめの副業は、<strong>プログラミング</strong>です！</p>
-    <p>プログラミングは、高収入、スキルアップ、興味・趣味など、あなたが重視することにマッチしています。</p>
-    <p>プログラミングは、Webサイトやアプリなどを作る技術です。Go言語は、シンプルで高速なプログラミング言語で、Web開発やクラウドサービスなどに広く使われています。</p>
-    -->
-    <!-- ここにおすすめの副業に関する入力フォームを表示する -->
-    <!-- 例えば、以下のような内容 -->
-    <!-- !>
+    <p>
+        {{recommendation}}
+    </p>
 
-    <form action =../../backend/handler/handler.go method="post">
+    <form action="/apply" method="post">
         <p>おすすめの副業に関するご意見をお聞かせください。</p>
         <p>おすすめの副業に関するご意見：<input type="text" name="comment" size="50" maxlength="100"></p>
         <p><input type="submit" value="送信"></p>
+    </form>
+</body>
+</html>
+```
