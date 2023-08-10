@@ -1,15 +1,16 @@
 package handler
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"net/mail"
-	"os"
+	"strconv"
+	"text/template"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sashabaranov/go-openai"
 )
 
 type testRequest struct {
@@ -26,15 +27,6 @@ type ChatGPTRequest struct {
 	MaxTokens int `json:"max_tokens"`
 }
 
-type ChatGPTResponse struct {
-    Response      string  `json:"response"`
-    Score         float64 `json:"score"`
-    ConversationID string `json:"conversationId"`
-    UserID        string `json:"userId"`
-    BotID         string `json:"botId"`
-    SessionID     string `json:"sessionId"`
-}
-
 type blob []byte
 
 type applyRequest struct {
@@ -43,12 +35,25 @@ type applyRequest struct {
 	Artifact blob `json:"artifact"`
 }
 
+type Template struct {
+	templates *template.Template
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
+
 func Init(e *echo.Echo) {
 	e.GET("/", Root)
 	e.GET("/test", Test)
 	e.POST("/calculate", Calculate)
 	e.GET("/share", Share)
 	e.POST("/apply", Apply)
+
+	t := &Template{
+		templates: template.Must(template.ParseGlob("../frontend/templates/*.html")),
+	}
+	e.Renderer = t
 }
 
 func Root(c echo.Context) error {
@@ -56,18 +61,20 @@ func Root(c echo.Context) error {
 }
 
 func Test(c echo.Context) error {
-	return c.Render(http.StatusOK, "../frontend/templates/test.html", nil)
+	return c.Render(http.StatusOK, "test.html", nil)
 }
 
 func Calculate(c echo.Context) error {
 	var req testRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
-	if err := c.Validate(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
-	fmt.Println(req)
+	req.MonthlyIncome, _ = strconv.Atoi(c.FormValue("monthly_income"))
+	req.MonthlyWorkHours, _ = strconv.Atoi(c.FormValue("monthly_work_hours"))
+	params, _ := c.FormParams()
+	req.Name = params["name"]
+	// for i := range req.Name {
+	// 	req.Level[i], _ = strconv.Atoi(params["level"][i])
+	// }
+	req.Level = make([]int, len(req.Name))
+	req.LeaningHours, _ = strconv.Atoi(c.FormValue("learning_hours"))
 
 	var skills string
 	for i := range req.Name {
@@ -75,11 +82,12 @@ func Calculate(c echo.Context) error {
 	}
 	message := "以下の条件を満たすおすすめの副業を教えてください。月に欲しい金額：" + fmt.Sprint(req.MonthlyIncome) + "円, 月に働ける時間：" + fmt.Sprint(req.MonthlyWorkHours) + "時間, 現在のスキル：" + skills + "学習に使うことのできる時間：" + fmt.Sprint(req.LeaningHours) + "時間"
 
-	recommendation, err := RecommendJob(message)
+	Recommendation, err := RecommendJob(message)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-	return c.Render(http.StatusOK, "../../frontend/templates/test.html", recommendation)
+
+	return c.Render(http.StatusOK, "result.html", Recommendation)
 }
 
 func Share(c echo.Context) error {
@@ -97,67 +105,26 @@ func Apply(c echo.Context) error {
 	return c.JSON(http.StatusOK, req)
 }
 
-// RecommendJob は、ChatGPT APIを使っておすすめの副業を出力する関数です。
-// 引数には、現在所有しているスキルとその習熟度、月に欲しい金額、月に働ける時間、学習に使うことのできる時間などの情報が含まれるメッセージを渡します。
-// 返り値には、おすすめの副業に関する情報やアドバイスなどが含まれるレスポンスを返します。
 func RecommendJob(message string) (string, error) {
-    // ChatGPT APIのキーとエンドポイントを設定する
-    key, ok := os.LookupEnv("OPEN_AI_SECRET")
-	if !ok {
-		panic("open-api-secret is empty")
+	client := openai.NewClient("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")
+	resp, err := client.CreateChatCompletion(
+		context.Background(),
+		openai.ChatCompletionRequest{
+			Model: openai.GPT3Dot5Turbo,
+			Messages: []openai.ChatCompletionMessage{
+				{
+					Role:    openai.ChatMessageRoleUser,
+					Content: message,
+				},
+			},
+			MaxTokens: 500, // 出力トークン数の上限
+			Temperature: 0, // 出力のランダム性を低くする
+		},
+	)
+
+	if err != nil {
+		panic(err)
 	}
-    endpoint := "https://chatgpt.cognitiveservices.azure.com/generateAnswer" // ここに自分のエンドポイントを入力する
 
-    // リクエスト用のJSONデータを作成する
-    request := ChatGPTRequest{
-		Model:         "gpt-3.5-turbo",
-        Query:         message,
-		MaxTokens:     500,
-    }
-    requestBody, err := json.Marshal(request)
-    if err != nil {
-        return "", err
-    }
-
-    // HTTPクライアントを作成する
-    client := &http.Client{}
-
-    // HTTPリクエストを作成する
-    req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(requestBody))
-    if err != nil {
-        return "", err
-    }
-
-    // ヘッダーにキーとコンテントタイプを設定する
-    req.Header.Add("Ocp-Apim-Subscription-Key", key)
-    req.Header.Add("Content-Type", "application/json")
-
-    // HTTPリクエストを送信する
-    resp, err := client.Do(req)
-    if err != nil {
-        return "", err
-    }
-    
-    // レスポンスボディを読み込む
-    responseBody, err := io.ReadAll(resp.Body)
-    if err != nil {
-        return "", err
-    }
-
-    // レスポンスボディを閉じる
-    defer resp.Body.Close()
-
-    // レスポンス用のJSONデータをパースする
-    var response ChatGPTResponse
-    err = json.Unmarshal(responseBody, &response)
-    if err != nil {
-        return "", err
-    }
-
-    // レスポンスからおすすめの副業を取得する
-    job := response.Response
-
-    // おすすめの副業を返す
-    return job, nil
-
+	return resp.Choices[0].Message.Content, nil
 }

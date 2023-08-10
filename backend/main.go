@@ -3,7 +3,6 @@ package main
 import (
 	"backend/handler"
 	"context"
-	_ "net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -11,8 +10,11 @@ import (
 	"backend/db"
 )
 
+
+
 func main() {
-    e := echo.New()
+	e := echo.New()
+	e.Debug = true
 
 	sqldb, err := db.PrepareDB(context.Background()); if err != nil {
 		e.Logger.Fatal(err)
