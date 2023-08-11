@@ -7,15 +7,33 @@
 </head>
 <body>
     <h1>おすすめの副業診断テストの結果</h1>
-    <p>
-        {{.Recommendation}}
-    </p>
-
+    <p>あなたにおすすめの副業は「{{.JobName}}」です。</p>
+    <p>{{.JobDescription}}</p>
+    <br>
     <form action="/apply" method="post">
-        <p>おすすめの副業に関するご意見をお聞かせください。</p>
-        <p>おすすめの副業に関するご意見：<input type="text" name="comment" size="50" maxlength="100"></p>
-        <p><input type="submit" value="送信"></p>
+        <p>大学生限定のクローズドコミュニティに入りませんか？</p>
+        <p>このコミュニティでは、副業に興味のある大学生同士が情報交換したり、ゲストを呼んだ講演会に参加したり、就職活動の援助を受けたり、副業としてのアルバイト先を紹介したりできます。副業だけじゃなく、大学生活や今後の社会人生活の礎になるコンテンツが盛りだくさんです！</p>
+        <p>加入条件は以下の通りです。</p>
+        <ul>
+            <li>初月に何らかの副業の成果物（プログラミングのコードや物販の領収書など）を提出すること。</li>
+            <li>翌月以降も何らかのコミットメントを見せること（例：毎月一回以上の参加、自分の経験や知識を共有するなど）。</li>
+        </ul>
+        <p>興味がある方は、以下の必須事項を入力してください。数営業日以内に詳しい加入条件やコンテンツなどご連絡いたします。</p>
+        <label for="name">名前：</label>
+        <input type="text" id="name" name="name" required><br>
+        <label for="email">大学のメールアドレス：</label>
+        <input type="email" id="email" name="email" required><br>
+        <input type="submit" value="申し込む" onclick="showPopup()">
     </form>
+    <div id="popup" style="display: none;">
+        <p>succesed!</p>
+    </div>  
 </body>
 </html>
-```
+
+<script>
+    function showPopup() {
+        var popup = document.getElementById("popup");
+        popup.style.display = "block";
+    }
+</script>

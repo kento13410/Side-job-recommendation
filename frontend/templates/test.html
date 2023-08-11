@@ -12,26 +12,17 @@
         <p>月に働ける時間は何時間ですか？<input type="number" name="monthly_work_hours" required>時間</p>
         <p>現在保有しているスキルとその習熟度を選択してください。</p>
         <ul>
-            <li><input type="hidden" name="name" value="スキル名1">1
-                <input type="radio" name="level" value="0" required>0
-                <input type="radio" name="level" value="1">1
-                <input type="radio" name="level" value="2">2
-                <input type="radio" name="level" value="3">3
-                <input type="radio" name="level" value="4">4
-                <input type="radio" name="level" value="5">5
-            </li>
-        </ul>
-        <ul>
-            <li><input type="hidden" name="name" value="スキル名2">2
-                <input type="radio" name="level" value="0" required>0
-                <input type="radio" name="level" value="1">1
-                <input type="radio" name="level" value="2">2
-                <input type="radio" name="level" value="3">3
-                <input type="radio" name="level" value="4">4
-                <input type="radio" name="level" value="5">5
-            </li>
-            <!-- 他のスキルも同様に追加 -->
-        </ul>
+            {{range $index, $value := .}}
+                <p>
+                    <input type="hidden" name="name" value="{{$value}}">"{{$value}}
+                    <input type="radio" name="{{$index}}" value="0" required>0
+                    <input type="radio" name="{{$index}}" value="1">1
+                    <input type="radio" name="{{$index}}" value="2">2
+                    <input type="radio" name="{{$index}}" value="3">3
+                    <input type="radio" name="{{$index}}" value="4">4
+                    <input type="radio" name="{{$index}}" value="5">5
+                </p>
+            {{end}}
         <p>学習可能時間は何時間ですか？<input type="number" name="learning_hours" required>時間</p>
         <p><input type="submit" value="送信"></p>
     </form>
