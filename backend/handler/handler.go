@@ -118,7 +118,7 @@ func Apply(c echo.Context) error {
 }
 
 func RecommendJob(message string) (SideJob, error) {
-	client := openai.NewClient("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")
+	client := openai.NewClient("OPENAI_API_KEY")
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
